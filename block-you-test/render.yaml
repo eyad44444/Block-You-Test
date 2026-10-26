@@ -1,0 +1,16 @@
+databases:
+  - name: block-you-test-db
+    plan: free
+
+services:
+  - type: web
+    name: block-you-test
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: block-you-test-db
+          property: connectionString

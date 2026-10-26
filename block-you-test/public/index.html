@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>بلوك يو تيست</title>
+<meta name="description" content="اعمل كويز عن نفسك، ابعته لصحابك، وشوف مين فعلا عارفك ومين يستاهل بلوك.">
+<meta property="og:title" content="بلوك يو تيست — مين صاحبك بجد؟">
+<meta property="og:description" content="جاوب على كويز صاحبك وشوف هتاخد بلوك ولا لأ.">
+<meta name="theme-color" content="#59b5ef">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&display=swap">
+<style>
+:root {
+  --sky: #59b5ef;
+  --page: #edf3fa;
+  --card: #ffffff;
+  --ink: #132252;
+  --ink-soft: #202a42;
+  --muted: #64708f;
+  --line: #d6dcef;
+  --bubble: #f4f5fc;
+  --blue: #2f80ff;
+  --blue-deep: #1a5fd1;
+  --pink: #ff5c8a;
+  --pink-deep: #d93a6a;
+  --green: #22b573;
+  --green-deep: #178a56;
+  --amber: #f2a01b;
+  --font-display: "Lalezar", "Tajawal", sans-serif;
+  --font-body: "Tajawal", "Segoe UI", Tahoma, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: #dfe9f5; }
+body {
+  margin: 0; min-height: 100dvh;
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55; color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; }
+[hidden] { display: none !important; }
+
+.shell {
+  max-width: 500px; min-height: 100dvh; margin: 0 auto; background: var(--page);
+  box-shadow: 0 3px 8px 3px #4075cd2b; display: flex; flex-direction: column; overflow-x: hidden;
+}
+
+/* Header: sky band + cloud edge, like the reference */
+.top {
+  position: relative; background: var(--sky); min-height: 128px; padding: 14px 16px 0;
+  display: grid; grid-template-columns: 48px 1fr 48px; align-items: start; overflow: hidden;
+}
+.logo {
+  justify-self: center; display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  font-family: var(--font-display); font-size: 2.1rem; line-height: 1; color: #fff;
+  text-shadow: 0 3px 0 #1d7fc4, 0 6px 14px #0b4f8a55; text-decoration: none; position: relative; z-index: 2;
+}
+.logo svg { width: 38px; height: 38px; filter: drop-shadow(0 3px 0 #1d7fc4); }
+.icon-btn {
+  position: relative; z-index: 3; width: 42px; height: 42px; margin-top: 4px; border: 0; border-radius: 16px;
+  background: #f8fbff; color: #0878d7; display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 18px #16131626; cursor: pointer;
+}
+.icon-btn:active { transform: translateY(1px); }
+.clouds { position: absolute; inset: auto 0 -1px 0; width: 100%; height: 46px; z-index: 1; pointer-events: none; }
+
+/* Drawer menu */
+.scrim { position: fixed; inset: 0; background: #0d1a3a66; z-index: 40; }
+.drawer {
+  position: fixed; top: 0; bottom: 0; left: 0; width: min(80%, 320px); background: #fff; z-index: 50;
+  padding: 18px; box-shadow: 0 0 30px #0003; display: flex; flex-direction: column; gap: 6px;
+  transform: translateX(-105%); transition: transform .25s ease;
+}
+.drawer.open { transform: none; }
+.drawer .close { align-self: flex-end; background: none; border: 0; cursor: pointer; padding: 6px; color: var(--ink); }
+.drawer a, .drawer button.link {
+  display: flex; align-items: center; gap: 10px; padding: 12px 6px; border: 0; background: none; cursor: pointer;
+  color: var(--ink); font-weight: 700; font-size: 1.05rem; text-decoration: none; text-align: right; border-bottom: 1px solid #eef1f8;
+}
+.drawer svg { color: var(--blue); flex: none; }
+
+main { flex: 1; padding: 12px 14px 32px; display: flex; flex-direction: column; gap: 18px; }
+.screen { display: flex; flex-direction: column; gap: 16px; }
+
+/* Cards */
+.card {
+  position: relative; background: var(--card); border-radius: 28px; padding: 22px 16px 20px;
+  box-shadow: 0 18px 36px #202a421f, inset 0 1px #ffffffe6; display: flex; flex-direction: column; gap: 14px;
+}
+.card.tight { padding: 18px 16px; gap: 12px; }
+.h {
+  font-family: var(--font-display); font-weight: 400; font-size: 1.85rem; line-height: 1.2;
+  text-align: center; margin: 0; color: var(--ink); text-wrap: balance;
+}
+.sub { margin: 0; text-align: center; color: var(--muted); text-wrap: pretty; }
+.lbl { font-weight: 800; font-size: .95rem; }
+
+/* Hero: mascot + speech bubble + doodles */
+.hero { position: relative; padding-top: 6px; }
+.stage { position: relative; display: flex; justify-content: center; min-height: 200px; }
+.mascot { width: 200px; height: 200px; filter: drop-shadow(0 12px 22px #202a4214); }
+.bubble {
+  position: absolute; top: 22px; right: 4px; width: min(40%, 156px); padding: 10px 12px;
+  background: var(--bubble); border: 1px solid var(--line); border-radius: 22px; transform: rotate(5deg);
+  box-shadow: 0 14px 28px #202a421a; text-align: center; font-weight: 800; line-height: 1.25; color: var(--ink-soft); font-size: .95rem;
+}
+.bubble::after {
+  content: ""; position: absolute; bottom: -17px; right: 18px; width: 22px; height: 18px; background: var(--bubble);
+  clip-path: polygon(6% 0, 82% 0, 72% 100%);
+}
+.bubble em { font-style: normal; color: var(--pink); }
+.doodle { position: absolute; pointer-events: none; }
+.d1 { top: 6px; left: 16px; width: 30px; transform: rotate(-10deg); }
+.d2 { top: 150px; right: 12px; width: 26px; }
+.d3 { top: 104px; left: 22px; width: 26px; }
+.headline {
+  text-align: center; font-family: var(--font-display); font-weight: 400; font-size: 2rem; line-height: 1.15; margin: 8px 0 2px; color: var(--ink);
+}
+.headline .b { color: var(--blue); }
+.headline .p { color: var(--pink); }
+.amp { display: flex; justify-content: center; align-items: center; gap: 14px; color: var(--ink); font-family: var(--font-display); font-size: 1.6rem; line-height: 1; margin: 4px 0; }
+.amp::before, .amp::after { content: ""; width: 30px; height: 3px; border-radius: 9px; background: #8ab9ff; }
+.amp::before { transform: rotate(28deg); } .amp::after { transform: rotate(-28deg); }
+
+/* Buttons: chunky, pill, 3D bottom edge */
+.btn {
+  --c: var(--blue); --d: var(--blue-deep);
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+  border: 0; border-radius: 999px; padding: 14px 20px; cursor: pointer; text-decoration: none;
+  background: var(--c); color: #fff; font-weight: 800; font-size: 1.08rem; letter-spacing: -.01em;
+  box-shadow: 0 5px 0 var(--d), 0 10px 18px color-mix(in srgb, var(--d) 35%, transparent);
+  transition: transform .08s, box-shadow .08s;
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--d); }
+.btn.pink { --c: var(--pink); --d: var(--pink-deep); }
+.btn.green { --c: var(--green); --d: var(--green-deep); }
+.btn.wa { --c: #25d366; --d: #179c4a; }
+.btn.tg { --c: #2aa3df; --d: #1b7bab; }
+.btn.light { --c: #fff; --d: #c9d4ea; color: var(--ink); border: 1.5px solid var(--line); }
+.btn.sm { padding: 10px 16px; font-size: .95rem; }
+.btn svg { flex: none; }
+.btn[disabled] { opacity: .6; cursor: progress; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Link box */
+.linkbox {
+  display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 6px; border-radius: 999px;
+  background: #eef4ff; border: 2px dashed #9cc0ff;
+}
+.linkbox input {
+  flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-weight: 700; color: var(--blue-deep);
+  direction: ltr; text-align: left; padding: 8px 12px; outline: none; font-size: .95rem;
+}
+.linkbox .btn { width: auto; padding: 10px 18px; font-size: .95rem; box-shadow: 0 3px 0 var(--d); }
+.toast { min-height: 1.3em; margin: -4px 0 0; text-align: center; font-weight: 700; color: var(--green); font-size: .92rem; }
+
+/* Inputs */
+.input {
+  width: 100%; font: inherit; font-weight: 700; color: var(--ink); background: #f6f8fd;
+  border: 2px solid var(--line); border-radius: 18px; padding: 13px 16px; text-align: center;
+}
+.input:focus { outline: none; border-color: var(--blue); background: #fff; }
+button:focus-visible, a:focus-visible, label.opt:focus-within { outline: 3px solid #84e2fa; outline-offset: 2px; }
+.err { min-height: 1.3em; margin: 0; color: var(--pink-deep); font-weight: 700; text-align: center; }
+
+/* Create form */
+.q { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.q legend { font-weight: 800; margin-bottom: 8px; padding: 0; }
+.q legend b { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-left: 6px; border-radius: 50%; background: var(--blue); color: #fff; font-size: .85rem; }
+.qgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+label.opt {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; cursor: pointer;
+  border: 2px solid var(--line); background: #f6f8fd; font-weight: 600; min-width: 0;
+}
+label.opt input { accent-color: var(--blue); margin: 0; flex: none; }
+label.opt:has(input:checked) { border-color: var(--blue); background: #e6f0ff; color: var(--blue-deep); }
+.sep { height: 1px; background: #eef1f8; margin: 4px 0; }
+
+/* Quiz */
+.meta { display: flex; justify-content: space-between; font-weight: 700; color: var(--muted); font-size: .92rem; font-variant-numeric: tabular-nums; }
+.progress { height: 10px; background: #e3e9f5; border-radius: 99px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--blue)); border-radius: 99px; transition: width .25s ease; }
+.qtext { font-family: var(--font-display); font-size: 1.65rem; line-height: 1.3; text-align: center; margin: 6px 0; text-wrap: balance; }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice {
+  text-align: center; cursor: pointer; padding: 14px 16px; border-radius: 18px; border: 2px solid var(--line);
+  background: #fff; color: var(--ink); font-weight: 700; box-shadow: 0 3px 0 #dbe2f1;
+}
+.choice:hover { border-color: var(--blue); }
+.choice.sel { border-color: var(--blue); background: var(--blue); color: #fff; box-shadow: 0 3px 0 var(--blue-deep); }
+
+/* Score */
+.score { text-align: center; font-family: var(--font-display); line-height: 1; }
+.score b { font-weight: 400; font-size: 4.2rem; color: var(--blue); font-variant-numeric: tabular-nums; }
+.score span { font-size: 1.4rem; color: var(--muted); }
+.pill { align-self: center; display: inline-block; font-weight: 800; font-size: .85rem; padding: 4px 14px; border-radius: 99px; color: #fff; white-space: nowrap; }
+.pill.ok { background: var(--green); } .pill.mid { background: var(--amber); } .pill.bad { background: var(--pink); }
+
+/* Scoreboard */
+.board-head { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.board { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.board li {
+  display: grid; grid-template-columns: 30px 1fr; grid-auto-flow: column; grid-auto-columns: auto; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 16px; background: #f6f8fd; border: 1px solid #e6ebf6;
+}
+.board .rank { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #e3ecff; color: var(--blue-deep); font-weight: 800; font-size: .9rem; }
+.board li:nth-child(1) .rank { background: #ffd84d; color: #6b4b00; }
+.board li:nth-child(2) .rank { background: #dfe5ee; color: #3d4a60; }
+.board li:nth-child(3) .rank { background: #f3c29b; color: #6b3a12; }
+.board .nm { font-weight: 800; min-width: 0; overflow-wrap: anywhere; }
+.board .pts { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ink); direction: ltr; }
+.board .del { border: 0; background: none; cursor: pointer; color: #a4adc4; padding: 4px; display: inline-flex; }
+.board .del:hover { color: var(--pink); }
+.board li.empty { display: block; text-align: center; color: var(--muted); background: transparent; border: 2px dashed var(--line); padding: 18px; }
+
+/* Other quizzes strip */
+.others { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.other {
+  border-radius: 20px; padding: 14px 12px; color: #fff; font-weight: 800; text-align: center; line-height: 1.3;
+  cursor: pointer; border: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.other small { font-weight: 600; opacity: .9; }
+.other.a { background: linear-gradient(135deg, #ff8fb1, #ff5c8a); }
+.other.b { background: linear-gradient(135deg, #6fb6ff, #2f80ff); }
+
+.spinner { display: flex; justify-content: center; padding: 60px 0; }
+.spinner svg { width: 46px; height: 46px; animation: spin 1.4s linear infinite; }
+@keyframes spin { to { transform: rotate(1turn); } }
+
+footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 0 24px; }
+@media (prefers-reduced-motion: reduce) { .spinner svg { animation: none; } .progress i, .drawer { transition: none; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <span aria-hidden="true"></span>
+    <a class="logo" href="/" aria-label="بلوك يو تيست — الرئيسية">
+      <svg viewBox="0 0 52 52" fill="none" aria-hidden="true"><circle cx="26" cy="26" r="21" fill="#ff5c8a" stroke="#fff" stroke-width="5"/><path d="M13 39 39 13" stroke="#fff" stroke-width="6" stroke-linecap="round"/></svg>
+      <span>بلوك يو تيست</span>
+    </a>
+    <button class="icon-btn" id="menu-open" type="button" aria-label="القايمة" aria-controls="drawer" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M0 96c0-17.7 14.3-32 32-32h448c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zm64 160c0-17.7 14.3-32 32-32h384c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zm384 160c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h384c17.7 0 32 14.3 32 32z"/></svg>
+    </button>
+    <svg class="clouds" viewBox="0 0 500 46" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#cfe9fb" d="M0 30c20-14 44-14 62-4 12-16 40-18 56-4 16-12 40-12 54 2 18-14 46-12 60 4 16-12 42-10 56 4 16-14 44-14 60 0 14-10 36-10 50 2 18-12 40-10 52 0 16-10 34-8 50 2V46H0z"/>
+      <path fill="#edf3fa" d="M0 38c18-10 38-10 52 0 14-12 36-12 50 0 16-10 34-10 48 2 14-12 38-12 52 0 14-10 34-10 48 0 16-12 40-12 54 0 14-10 34-10 48 0 14-10 32-10 46 0 16-10 34-10 52 0 12-8 30-8 50 0v8H0z"/>
+    </svg>
+  </header>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <nav class="drawer" id="drawer" aria-label="القايمة" aria-hidden="true">
+    <button class="close" id="menu-close" type="button" aria-label="اقفل القايمة">
+      <svg width="22" height="22" viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3l105.4 105.3c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256z"/></svg>
+    </button>
+    <button class="link" type="button" data-nav="create">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>اعمل كويز جديد</button>
+    <button class="link" type="button" data-nav="mine" id="nav-mine" hidden>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.9 12a3.1 3.1 0 0 1 3.1-3.1h4V7H7a5 5 0 0 0 0 10h4v-1.9H7A3.1 3.1 0 0 1 3.9 12zM8 13h8v-2H8zm9-6h-4v1.9h4a3.1 3.1 0 0 1 0 6.2h-4V17h4a5 5 0 0 0 0-10z"/></svg>لينك الكويز بتاعي</button>
+    <button class="link" type="button" data-nav="home">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>الرئيسية</button>
+  </nav>
+
+  <main>
+    <div class="spinner" id="s-loading" aria-label="بنحمّل">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#4c8dff" stroke-width="4" opacity=".2"/><path d="M12 3a9 9 0 0 1 9 9" stroke="#4c8dff" stroke-width="4" stroke-linecap="round"/></svg>
+    </div>
+
+    <!-- HOME -->
+    <section class="screen" id="s-home" hidden>
+      <div class="card">
+        <div class="hero" data-hero="مين صاحبك<br><em>بجد؟</em>"></div>
+        <p class="headline">اعمل <span class="b">كويز</span> عن نفسك</p>
+        <div class="amp">و</div>
+        <p class="headline">اكتشف مين <span class="p">يستاهل بلوك</span> 🚫</p>
+        <p class="sub">جاوب ١٠ أسئلة عن نفسك، ابعت اللينك لصحابك، وشوف مين فيهم عارفك فعلا.</p>
+        <button class="btn" type="button" data-nav="create">يلا نبدأ
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg>
+        </button>
+        <button class="btn light" type="button" data-nav="mine" id="home-mine" hidden>لينك الكويز بتاعي ونتايجه</button>
+      </div>
+    </section>
+
+    <!-- CREATE -->
+    <section class="screen" id="s-create" hidden>
+      <div class="card tight">
+        <h1 class="h">اكتب اسمك</h1>
+        <input class="input" type="text" id="creator-name" maxlength="30" autocomplete="off" placeholder="مثلا: إياد" aria-label="اسمك">
+      </div>
+      <form class="card tight" id="create-form" novalidate>
+        <h2 class="h" style="font-size:1.5rem">جاوب بإجاباتك الحقيقية</h2>
+        <p class="sub">صحابك هيحاولوا يخمنوها.</p>
+        <div id="create-qs" style="display:flex;flex-direction:column;gap:16px"></div>
+      </form>
+      <p class="err" id="create-err" role="alert"></p>
+      <button class="btn pink" id="make-quiz" type="button">اعمل الكويز وهات اللينك</button>
+    </section>
+
+    <!-- SHARE (the page modelled on the reference) -->
+    <section class="screen" id="s-share" hidden>
+      <div class="card">
+        <div class="hero" data-hero="مين فيهم<br><em>صاحبك بجد؟</em>"></div>
+        <p class="headline">ابعت <span class="b">اللينك</span> بتاعك</p>
+        <div class="amp">و</div>
+        <p class="headline">اكتشف صحابك <span class="p">الفيك</span> 🎭</p>
+
+        <div class="linkbox">
+          <input id="quiz-link" type="text" readonly aria-label="لينك الكويز">
+          <button class="btn" id="copy-link" type="button">انسخ</button>
+        </div>
+        <p class="toast" id="copy-msg" role="status"></p>
+
+        <div class="row2">
+          <a class="btn wa" id="share-wa" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M380.9 97.1A223 223 0 0 0 224 32C100.5 32 0 132.5 0 256c0 39.4 10.3 77.9 29.9 112L0 480l115.4-30.3a223 223 0 0 0 108.5 27.6h.1c123.4 0 224-100.5 224-224 0-59.8-25.2-116-67.1-156.2zM224 438.7c-33.2 0-65.7-8.9-94-25.7l-6.7-4-68.5 18 18.3-66.8-4.4-6.9A185 185 0 0 1 40 256c0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1a183 183 0 0 1 54 130.5c-.1 101.8-84.9 184.6-185 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8s-14.3 18-17.6 21.8c-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7s-12.5-30.1-17.1-41.2c-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2s-9.7 1.4-14.8 6.9c-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.6 57.4c2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4s4.6-24.1 3.2-26.4c-1.3-2.5-5-3.9-10.5-6.6z"/></svg>واتساب</a>
+          <a class="btn tg" id="share-tg" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 496 512" fill="currentColor" aria-hidden="true"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg>تليجرام</a>
+        </div>
+        <button class="btn pink" id="share-native" type="button" hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16a3 3 0 0 0-2 .8l-7.1-4.2a3 3 0 0 0 0-1.2L16 7.2A3 3 0 1 0 15 5c0 .2 0 .4.1.6L8 9.8a3 3 0 1 0 0 4.4l7.1 4.1-.1.7a3 3 0 1 0 3-3z"/></svg>شير في أي مكان (انستا، سناب...)</button>
+        <button class="btn green" id="to-board" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 9h3v11H5zm5.5-5h3v16h-3zM16 13h3v7h-3z"/></svg>شوف لوحة النتايج</button>
+      </div>
+      <p class="sub" style="font-size:.9rem">اللينك ده بتاعك انت بس، احفظه. النتايج بتتحدث لوحدها أول ما صحابك يخلصوا.</p>
+    </section>
+
+    <!-- JOIN -->
+    <section class="screen" id="s-join" hidden>
+      <div class="card">
+        <div class="hero" id="join-hero"></div>
+        <h1 class="h" id="join-title"></h1>
+        <p class="sub">جاوب على ١٠ أسئلة، وشوف هتطلع صاحب بجد ولا هتاخد بلوك.</p>
+        <input class="input" type="text" id="friend-name" maxlength="30" autocomplete="off" placeholder="اكتب اسمك" aria-label="اسمك">
+        <p class="err" id="join-err" role="alert"></p>
+        <button class="btn pink" id="start-quiz" type="button">ابدأ الكويز</button>
+        <button class="btn light sm" type="button" id="join-board">شوف لوحة النتايج الأول</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="screen" id="s-quiz" hidden>
+      <div class="card">
+        <div class="meta"><span id="quiz-who"></span><span id="quiz-count"></span></div>
+        <div class="progress" aria-hidden="true"><i id="quiz-bar"></i></div>
+        <p class="qtext" id="quiz-q"></p>
+        <div class="choices" id="quiz-choices"></div>
+        <p class="err" id="quiz-err" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- DONE -->
+    <section class="screen" id="s-done" hidden>
+      <div class="card">
+        <h1 class="h" id="done-title"></h1>
+        <div class="score"><b id="done-score"></b> <span id="done-total"></span></div>
+        <span class="pill" id="done-pill"></span>
+        <p class="sub" id="done-text"></p>
+        <button class="btn green" type="button" id="done-board">شوف ترتيبك في لوحة النتايج</button>
+        <button class="btn pink" type="button" data-nav="create">اعمل الكويز بتاعك انت</button>
+      </div>
+    </section>
+
+    <!-- SCOREBOARD -->
+    <section class="screen" id="s-board" hidden>
+      <div class="card">
+        <div class="board-head"><span style="font-size:1.6rem" aria-hidden="true">🏆</span><h1 class="h" id="board-title"></h1></div>
+        <p class="sub" id="board-sub"></p>
+        <ul class="board" id="board-list"></ul>
+        <div id="board-owner" hidden style="display:flex;flex-direction:column;gap:12px">
+          <button class="btn" type="button" data-nav="mine">ابعت اللينك لصحاب أكتر</button>
+        </div>
+        <div id="board-guest" hidden>
+          <button class="btn pink" type="button" data-nav="create">اعمل الكويز بتاعك انت</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOT FOUND -->
+    <section class="screen" id="s-missing" hidden>
+      <div class="card">
+        <h1 class="h">الكويز ده مش موجود 😕</h1>
+        <p class="sub">يمكن اللينك ناقص أو اتمسح. اطلب اللينك تاني من صاحبك.</p>
+        <button class="btn pink" type="button" data-nav="create">اعمل الكويز بتاعك</button>
+      </div>
+    </section>
+
+    <div class="others" id="others">
+      <button class="other a" type="button" data-nav="create">🫣 اعمل كويز جديد<small>واكتشف صحابك الفيك</small></button>
+      <button class="other b" type="button" data-nav="mine-or-create">📋 نتايج الكويز بتاعي<small>مين جاوب صح؟</small></button>
+    </div>
+  </main>
+  <footer>بلوك يو تيست · اعمل كويز، ابعته، واعرف صحابك</footer>
+</div>
+
+<template id="hero-tpl">
+  <svg class="doodle d1" viewBox="0 0 24 24" aria-hidden="true"><path fill="#ffd84d" stroke="#e0a800" stroke-width="1.2" stroke-linejoin="round" d="m12 2 2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>
+  <svg class="doodle d2" viewBox="0 0 24 24" aria-hidden="true"><path fill="#ff5c8a" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+  <svg class="doodle d3" viewBox="0 0 24 24" aria-hidden="true"><path fill="#84e2fa" d="M12 0c.8 6.2 5 10.6 12 12-7 1.4-11.2 5.8-12 12-.8-6.2-5-10.6-12-12 7-1.4 11.2-5.8 12-12z"/></svg>
+  <div class="stage">
+    <svg class="mascot" viewBox="0 0 200 200" aria-hidden="true">
+      <ellipse cx="100" cy="188" rx="58" ry="8" fill="#202a42" opacity=".08"/>
+      <path d="M48 118c0-38 23-66 52-66s52 28 52 66c0 34-22 62-52 62s-52-28-52-62z" fill="#59b5ef"/>
+      <path d="M58 126c0-28 18-50 42-50s42 22 42 50c0 26-18 46-42 46s-42-20-42-46z" fill="#9fd4f7"/>
+      <circle cx="80" cy="104" r="13" fill="#fff"/><circle cx="120" cy="104" r="13" fill="#fff"/>
+      <circle cx="83" cy="106" r="6" fill="#132252"/><circle cx="117" cy="106" r="6" fill="#132252"/>
+      <circle cx="85" cy="103" r="2" fill="#fff"/><circle cx="119" cy="103" r="2" fill="#fff"/>
+      <path d="M68 86 92 92M132 86l-24 6" stroke="#132252" stroke-width="5" stroke-linecap="round"/>
+      <path d="M88 136q12 -8 24 0" stroke="#132252" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <circle cx="68" cy="126" r="6" fill="#ff8fb1" opacity=".7"/><circle cx="132" cy="126" r="6" fill="#ff8fb1" opacity=".7"/>
+      <path d="M150 128c10-4 16-14 14-26" stroke="#59b5ef" stroke-width="12" stroke-linecap="round" fill="none"/>
+      <g transform="rotate(14 166 70)">
+        <rect x="163" y="64" width="6" height="40" rx="3" fill="#b07a4a"/>
+        <circle cx="166" cy="56" r="24" fill="#ff5c8a" stroke="#fff" stroke-width="4"/>
+        <path d="M150 72 182 40" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+      </g>
+      <path d="M50 128c-10-2-18 4-20 14" stroke="#59b5ef" stroke-width="12" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="bubble"></div>
+  </div>
+</template>
+
+<script>
+(function () {
+  // Questions are fixed; the server stores the creator's chosen option index per question.
+  var Q = [
+    { q: "لو لقيت ١٠٠ جنيه في الشارع هعمل بيهم ايه؟", o: ["اشتري أكل", "اشحن موبايلي", "ادّيهم لحد محتاج", "احتفظ بيهم"] },
+    { q: "مشروبي المفضل؟", o: ["شاي", "قهوة", "عصير قصب", "نسكافيه"] },
+    { q: "بقضي وقت فراغي في ايه؟", o: ["ألعاب", "نوم", "خروج مع صحابي", "مسلسلات وأفلام"] },
+    { q: "أكتر حاجة بتضايقني؟", o: ["التأخير", "الكدب", "الزحمة", "الصوت العالي"] },
+    { q: "أسلوبي في الرسايل؟", o: ["برد فورا", "برد بعد ساعات", "بشوف وأنسى", "مفيش رد خالص"] },
+    { q: "أكلتي المفضلة؟", o: ["كشري", "بيتزا", "فراخ مشوية", "شاورما"] },
+    { q: "لو هسافر هروح فين؟", o: ["شرم الشيخ", "الإسكندرية", "تركيا", "دبي"] },
+    { q: "أهم صفة أقدّرها في الصاحب؟", o: ["الصدق", "الجدعنة", "خفة الدم", "كتمان السر"] },
+    { q: "أول حاجة بعملها لما أصحى؟", o: ["أشوف الموبايل", "أشرب مية", "أنام تاني", "أجهز على طول"] },
+    { q: "لو اتخانقت مع صاحبي هعمل ايه؟", o: ["أصالحه بسرعة", "أستنى هو يكلمني", "أتجاهله فترة", "أقعد أفهمه وأتكلم معاه"] }
+  ];
+  var TOTAL = Q.length;
+  var MINE = "byt-mine";
+  var $ = function (id) { return document.getElementById(id); };
+  var quiz = null;                 // { id, name, isOwner }
+  var play = { name: "", picks: [], i: 0, locked: false };
+  var poll = null;
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function mine() { try { return JSON.parse(localStorage.getItem(MINE) || "null"); } catch (e) { return null; } }
+  function setMine(v) { try { localStorage.setItem(MINE, JSON.stringify(v)); } catch (e) {} }
+  function linkFor(id) { return location.origin + "/q/" + id; }
+  function verdict(pct) {
+    if (pct >= 75) return { c: "ok", t: "صاحب بجد 💙" };
+    if (pct >= 40) return { c: "mid", t: "نص نص 🤨" };
+    return { c: "bad", t: "يستاهل بلوك 🚫" };
+  }
+  function api(path, opts) {
+    opts = opts || {};
+    var m = mine(), headers = { "content-type": "application/json" };
+    if (m && m.token) headers["x-owner-token"] = m.token;
+    return fetch("/api/quizzes" + path, { method: opts.method || "GET", headers: headers, body: opts.body ? JSON.stringify(opts.body) : undefined })
+      .then(function (r) {
+        if (r.status === 204) return {};
+        return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) { var e = new Error(d.error || "error"); e.status = r.status; throw e; } return d; });
+      });
+  }
+
+  // Inject mascot hero into each placeholder
+  document.querySelectorAll("[data-hero]").forEach(function (el) { fillHero(el, el.getAttribute("data-hero")); });
+  function fillHero(el, html) {
+    el.innerHTML = ""; el.className = "hero";
+    el.appendChild($("hero-tpl").content.cloneNode(true));
+    el.querySelector(".bubble").innerHTML = html;
+  }
+
+  function show(id) {
+    document.querySelectorAll("main .screen, #s-loading").forEach(function (s) { s.hidden = s.id !== id; });
+    $("others").hidden = id === "s-quiz" || id === "s-create" || id === "s-loading";
+    if (id !== "s-board" && poll) { clearInterval(poll); poll = null; }
+    window.scrollTo(0, 0);
+  }
+  function go(path) { history.pushState(null, "", path); route(); }
+  function refreshMine() {
+    var has = !!mine();
+    $("nav-mine").hidden = !has; $("home-mine").hidden = !has;
+  }
+
+  /* Drawer */
+  function drawer(open) {
+    $("drawer").classList.toggle("open", open); $("scrim").hidden = !open;
+    $("drawer").setAttribute("aria-hidden", String(!open)); $("menu-open").setAttribute("aria-expanded", String(open));
+  }
+  $("menu-open").onclick = function () { drawer(true); };
+  $("menu-close").onclick = $("scrim").onclick = function () { drawer(false); };
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") drawer(false); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-nav]"); if (!b) return;
+    drawer(false);
+    var n = b.getAttribute("data-nav"), m = mine();
+    if (n === "home") go("/");
+    else if (n === "create") go("/create");
+    else if (n === "mine" || n === "mine-or-create") go(m ? "/share/" + m.id : "/create");
+  });
+
+  /* Create */
+  (function build() {
+    var html = "";
+    Q.forEach(function (item, i) {
+      if (i) html += '<div class="sep"></div>';
+      html += '<fieldset class="q"><legend><b>' + (i + 1) + "</b>" + esc(item.q) + '</legend><div class="qgrid">';
+      item.o.forEach(function (o, j) {
+        html += '<label class="opt"><input type="radio" name="q' + i + '" value="' + j + '"><span>' + esc(o) + "</span></label>";
+      });
+      html += "</div></fieldset>";
+    });
+    $("create-qs").innerHTML = html;
+  })();
+
+  $("make-quiz").onclick = function () {
+    var name = $("creator-name").value.trim(), ans = [], err = $("create-err"), btn = this;
+    if (!name) { err.textContent = "اكتب اسمك الأول."; $("creator-name").focus(); return; }
+    for (var i = 0; i < TOTAL; i++) {
+      var c = document.querySelector('input[name="q' + i + '"]:checked');
+      if (!c) { err.textContent = "جاوب السؤال رقم " + (i + 1) + "."; c = document.querySelector('input[name="q' + i + '"]'); c.closest("fieldset").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+      ans.push(parseInt(c.value, 10));
+    }
+    err.textContent = ""; btn.disabled = true; btn.textContent = "بنجهز اللينك...";
+    api("", { method: "POST", body: { name: name, answers: ans } }).then(function (d) {
+      setMine({ id: d.id, token: d.ownerToken, name: d.name });
+      $("create-form").reset(); $("creator-name").value = "";
+      refreshMine(); go("/share/" + d.id);
+    }, function () { err.textContent = "حصلت مشكلة، جرب تاني."; }).finally(function () {
+      btn.disabled = false; btn.textContent = "اعمل الكويز وهات اللينك";
+    });
+  };
+
+  /* Share */
+  function openShare(id) {
+    if (!mine() || mine().id !== id) { history.replaceState(null, "", "/q/" + id); return openJoin(id); }
+    var link = linkFor(id), m = mine(), text = "يا ترى انت صاحبي بجد ولا تستاهل بلوك؟ 🚫 جاوب على الكويز بتاعي: ";
+    $("quiz-link").value = link; $("copy-msg").textContent = "";
+    $("share-wa").href = "https://wa.me/?text=" + encodeURIComponent(text + link);
+    $("share-tg").href = "https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(text);
+    $("share-native").hidden = !navigator.share;
+    $("share-native").onclick = function () { navigator.share({ title: "بلوك يو تيست", text: text, url: link }).catch(function () {}); };
+    $("to-board").onclick = function () { go("/board/" + id); };
+    show("s-share");
+  }
+  $("copy-link").onclick = function () {
+    var inp = $("quiz-link"), msg = $("copy-msg");
+    function fallback() { inp.select(); msg.textContent = "حدد اللينك وانسخه بإيدك."; }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(inp.value).then(function () { msg.textContent = "✓ اتنسخ! ابعته لصحابك"; }, fallback);
+    else fallback();
+  };
+  $("quiz-link").onfocus = function () { this.select(); };
+
+  /* Join */
+  function openJoin(id) {
+    show("s-loading");
+    api("/" + id).then(function (d) {
+      quiz = d;
+      if (d.isOwner) { go("/share/" + id); return; }
+      fillHero($("join-hero"), "انت عارف<br><em>" + esc(d.name) + "</em>؟");
+      $("join-title").textContent = "كويز " + d.name;
+      $("join-err").textContent = "";
+      $("join-board").onclick = function () { go("/board/" + id); };
+      show("s-join");
+    }, function () { show("s-missing"); });
+  }
+  $("start-quiz").onclick = function () {
+    var name = $("friend-name").value.trim();
+    if (!name) { $("join-err").textContent = "اكتب اسمك الأول."; $("friend-name").focus(); return; }
+    play = { name: name, picks: [], i: 0, locked: false };
+    $("quiz-err").textContent = "";
+    renderQ(); show("s-quiz");
+  };
+  $("friend-name").onkeydown = function (e) { if (e.key === "Enter") $("start-quiz").click(); };
+
+  function renderQ() {
+    var item = Q[play.i];
+    $("quiz-who").textContent = "كويز " + quiz.name;
+    $("quiz-count").textContent = (play.i + 1) + " / " + TOTAL;
+    $("quiz-bar").style.width = (play.i / TOTAL * 100) + "%";
+    $("quiz-q").textContent = item.q;
+    var box = $("quiz-choices"); box.innerHTML = "";
+    item.o.forEach(function (o, j) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "choice"; b.textContent = o;
+      b.onclick = function () { pick(j, b); };
+      box.appendChild(b);
+    });
+    play.locked = false;
+  }
+  function pick(j, btn) {
+    if (play.locked) return;
+    play.locked = true; btn.classList.add("sel"); play.picks[play.i] = j;
+    setTimeout(function () {
+      play.i++;
+      if (play.i < TOTAL) renderQ(); else submit();
+    }, 260);
+  }
+  function submit() {
+    $("quiz-bar").style.width = "100%";
+    $("quiz-q").textContent = "بنحسب نتيجتك...";
+    $("quiz-choices").innerHTML = "";
+    api("/" + quiz.id + "/results", { method: "POST", body: { name: play.name, picks: play.picks } }).then(function (d) {
+      var pct = Math.round(d.score / d.total * 100), v = verdict(pct);
+      $("done-title").textContent = "خلصت يا " + play.name + "!";
+      $("done-score").textContent = d.score;
+      $("done-total").textContent = "/ " + d.total;
+      var pill = $("done-pill"); pill.textContent = v.t; pill.className = "pill " + v.c;
+      $("done-text").textContent = pct >= 75 ? "انت عارف " + quiz.name + " كويس جدا." : pct >= 40 ? "عارف " + quiz.name + " شوية، بس لسه." : quiz.name + " مش هيكون مبسوط من النتيجة دي.";
+      $("done-board").onclick = function () { go("/board/" + quiz.id); };
+      show("s-done");
+    }, function () {
+      $("quiz-q").textContent = "معرفناش نبعت نتيجتك.";
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "btn"; b.textContent = "جرب تاني"; b.onclick = submit;
+      $("quiz-choices").appendChild(b);
+    });
+  }
+
+  /* Scoreboard */
+  function openBoard(id) {
+    show("s-loading");
+    function load(first) {
+      return api("/" + id + "/results").then(function (d) {
+        $("board-title").textContent = "لوحة نتايج " + d.name;
+        $("board-sub").textContent = d.isOwner ? "دي نتايج صحابك اللي جاوبوا على الكويز بتاعك." : "مين أكتر واحد عارف " + d.name + "؟";
+        $("board-owner").hidden = !d.isOwner; $("board-guest").hidden = d.isOwner;
+        var ul = $("board-list");
+        if (!d.results.length) {
+          ul.innerHTML = '<li class="empty">لسه محدش جاوب. ابعت اللينك لصحابك! 📤</li>';
+        } else {
+          ul.innerHTML = d.results.map(function (r, k) {
+            var v = verdict(Math.round(r.score / r.total * 100));
+            return '<li><span class="rank">' + (k + 1) + '</span><span class="nm" dir="auto">' + esc(r.name) + '</span>' +
+              '<span class="pill ' + v.c + '">' + v.t + '</span>' +
+              '<span class="pts">' + r.score + "/" + r.total + "</span>" +
+              (d.isOwner ? '<button class="del" type="button" data-rid="' + r.id + '" aria-label="امسح ' + esc(r.name) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"/></svg></button>' : "") +
+              "</li>";
+          }).join("");
+        }
+        if (first) show("s-board");
+      });
+    }
+    load(true).then(function () {
+      poll = setInterval(function () { if (!document.hidden) load(false).catch(function () {}); }, 8000);
+    }, function () { show("s-missing"); });
+    $("board-list").onclick = function (e) {
+      var b = e.target.closest(".del"); if (!b) return;
+      if (!confirm("تمسح النتيجة دي؟")) return;
+      api("/" + id + "/results?rid=" + b.getAttribute("data-rid"), { method: "DELETE" }).then(function () { load(false); });
+    };
+  }
+
+  /* Router */
+  function route() {
+    var p = location.pathname.replace(/\/+$/, ""), m;
+    refreshMine();
+    if ((m = p.match(/^\/q\/([a-z0-9]{6,12})$/i))) return openJoin(m[1]);
+    if ((m = p.match(/^\/share\/([a-z0-9]{6,12})$/i))) return openShare(m[1]);
+    if ((m = p.match(/^\/board\/([a-z0-9]{6,12})$/i))) return openBoard(m[1]);
+    if (p === "/create") return show("s-create");
+    show("s-home");
+  }
+  window.addEventListener("popstate", route);
+  route();
+})();
+</script>
+</body>
+</html>
